@@ -14,7 +14,7 @@ namespace LojaDeGames.Validator
 
             RuleFor(t => t.Descricao)
                     .NotEmpty()
-                    .MinimumLength(10)
+                    .MinimumLength(5)
                     .MaximumLength(1000);
 
             RuleFor(t => t.Console)
@@ -30,7 +30,7 @@ namespace LojaDeGames.Validator
             
             RuleFor(t => t.Foto)
                    .NotEmpty()
-                   .MinimumLength(5)
+                   .MinimumLength(2)
                    .MaximumLength(5000);
         }
     }
