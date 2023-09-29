@@ -1,5 +1,9 @@
 using FluentValidation;
 using LojaDeGames.Data;
+using LojaDeGames.Model;
+using LojaDeGames.Service;
+using LojaDeGames.Service.Implements;
+using LojaDeGames.Validator;
 using Microsoft.EntityFrameworkCore;
 using System;
 
@@ -31,13 +35,13 @@ namespace LojaDeGames
             );
 
             //Registrar a Validações das Entidades !!!!!!!!!!!!!!!!
-            //builder.Services.AddTransient<IValidator<Postagem>, PostagemValidator>();
-            //builder.Services.AddTransient<IValidator<Tema>, TemaValidator>();
+            builder.Services.AddTransient<IValidator<Produto>, ProdutoValidator>();
+            builder.Services.AddTransient<IValidator<Categoria>, CategoriaValidator>();
 
             //Registrar as Classes de Serviço (Service)
             //AddScoped: 
-            //builder.Services.AddScoped<IPostagemService, PostagemService>();
-            //builder.Services.AddScoped<ITemaService, TemaService>();
+            builder.Services.AddScoped<IProdutoService, ProdutoService>();
+            builder.Services.AddScoped<ICategoriaService, CategoriaService>();
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
