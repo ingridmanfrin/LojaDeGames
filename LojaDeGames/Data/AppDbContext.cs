@@ -11,8 +11,8 @@ namespace LojaDeGames.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             //MODEL GERA AS TABELAS
-            modelBuilder.Entity<Produto>().ToTable("tb_categorias");
-            modelBuilder.Entity<Categoria>().ToTable("tb_temas");
+            modelBuilder.Entity<Produto>().ToTable("tb_produtos");
+            modelBuilder.Entity<Categoria>().ToTable("tb_categorias");
 
             _ = modelBuilder.Entity<Produto>()
                 .HasOne(_ => _.Categoria)
