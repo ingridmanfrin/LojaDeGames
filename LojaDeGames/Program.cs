@@ -1,11 +1,16 @@
 using FluentValidation;
 using LojaDeGames.Data;
 using LojaDeGames.Model;
+using LojaDeGames.Security.Implements;
+using LojaDeGames.Security;
 using LojaDeGames.Service;
 using LojaDeGames.Service.Implements;
 using LojaDeGames.Validator;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 namespace LojaDeGames
 {
@@ -16,7 +21,6 @@ namespace LojaDeGames
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
 
             //quando for fazer a descerialização do objeto não fazer um loop infinito
@@ -24,6 +28,7 @@ namespace LojaDeGames
                 .AddNewtonsoftJson(options =>
                 {
                     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+                    options.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
                 });
 
             //Conecção com o Banco de Dados 
@@ -34,14 +39,36 @@ namespace LojaDeGames
                     options.UseSqlServer(connectionString)
             );
 
-            //Registrar a Validações das Entidades !!!!!!!!!!!!!!!!
+            //Registrar a Validações das Entidades 
             builder.Services.AddTransient<IValidator<Produto>, ProdutoValidator>();
             builder.Services.AddTransient<IValidator<Categoria>, CategoriaValidator>();
+            builder.Services.AddTransient<IValidator<User>, UserValidator>();
 
             //Registrar as Classes de Serviço (Service)
             //AddScoped: 
             builder.Services.AddScoped<IProdutoService, ProdutoService>();
             builder.Services.AddScoped<ICategoriaService, CategoriaService>();
+            builder.Services.AddScoped<IUserService, UserService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
+
+            //validação do Token
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(options =>
+            {
+                var key = Encoding.UTF8.GetBytes(Settings.Secret);
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key)
+                };
+            });
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
@@ -76,8 +103,9 @@ namespace LojaDeGames
             //Inicializa o CORS
             app.UseCors("MyPolicy");
 
-            app.UseAuthorization();
+            app.UseAuthentication();
 
+            app.UseAuthorization();
 
             app.MapControllers();
 

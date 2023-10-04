@@ -13,6 +13,7 @@ namespace LojaDeGames.Data
             //MODEL GERA AS TABELAS
             modelBuilder.Entity<Produto>().ToTable("tb_produtos");
             modelBuilder.Entity<Categoria>().ToTable("tb_categorias");
+            modelBuilder.Entity<User>().ToTable("tb_usuarios");
 
             _ = modelBuilder.Entity<Produto>()
                 .HasOne(_ => _.Categoria)
@@ -24,6 +25,8 @@ namespace LojaDeGames.Data
         public DbSet<Categoria> Categorias { get; set; } = null!;
 
         public DbSet<Produto> Produtos { get; set; } = null!;
+
+        public DbSet<User> Users { get; set; } = null!;
 
     }
 }
